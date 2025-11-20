@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "@tanstack/react-router";
 import { useAuth } from "../context/AuthContext";
 import "./login.css";
@@ -6,6 +6,8 @@ import "./login.css";
 function LoginPage() {
   const router = useRouter();
   const { isAuthenticated, login } = useAuth();
+  const [error, setError] = useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     if (isAuthenticated) {
@@ -13,10 +15,24 @@ function LoginPage() {
     }
   }, [isAuthenticated, router]);
 
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    login();
-    router.navigate({ to: "/game", replace: true });
+    setError(null);
+    setIsSubmitting(true);
+
+    const form = event.currentTarget;
+    const formData = new FormData(form);
+    const username = String(formData.get("username") ?? "").trim();
+    const password = String(formData.get("password") ?? "");
+
+    try {
+      await login(username, password);
+      router.navigate({ to: "/game", replace: true });
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "登录失败，请重试");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -46,9 +62,14 @@ function LoginPage() {
               required
             />
           </label>
-          <button type="submit">登录</button>
+          {error ? <p className="login-error">{error}</p> : null}
+          <button type="submit" disabled={isSubmitting}>
+            {isSubmitting ? "正在登录…" : "登录"}
+          </button>
         </form>
-        <p className="login-hint">此登录仅用于演示，不会校验真实账号。</p>
+        <p className="login-hint">
+          账号信息会发送到后端验证，请使用已注册的凭证。
+        </p>
       </section>
     </div>
   );
