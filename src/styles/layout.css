@@ -1,0 +1,70 @@
+.shell {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  transition: background 200ms ease;
+}
+
+.shell--guest {
+  background: #f4f6fb;
+}
+
+.shell--auth {
+  background: #eef2fb;
+}
+
+.topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.25rem 1rem;
+  border-bottom: 1px solid rgba(15, 23, 42, 0.08);
+  background: rgba(255, 255, 255, 0.86);
+  backdrop-filter: blur(6px);
+}
+
+.topbar__title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #1a1f2d;
+}
+
+.topbar__logout {
+  border: 1px solid rgba(25, 35, 62, 0.12);
+  border-radius: 999px;
+  padding: 0.45rem 1.1rem;
+  font-size: 1.1rem;
+  background: #ffffff;
+  cursor: pointer;
+  transition: background 150ms ease, border-color 150ms ease;
+}
+
+.topbar__logout:hover {
+  border-color: rgba(41, 74, 185, 0.32);
+  background: rgba(244, 246, 255, 0.9);
+}
+
+.shell__body {
+  flex: 1 1 auto;
+  display: flex;
+}
+
+.shell__body--guest {
+  justify-content: center;
+  align-items: center;
+  padding: 2rem 1.5rem;
+}
+
+.shell__body--auth {
+  padding: 0.5rem 0.5rem 0rem;
+}
+
+@media (max-width: 720px) {
+  .topbar {
+    padding: 1rem 1.25rem;
+  }
+
+  .topbar__title {
+    font-size: 1rem;
+  }
+}
