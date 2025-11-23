@@ -53,10 +53,18 @@ function App() {
   // add `?static=1` so the embedded game runs in static mode and won't prompt about serviceWorker.
   const [iframeSrc] = useState(() => {
     try {
-      const isLocalhost = typeof location !== 'undefined' && (location.hostname === 'localhost' || location.hostname === '127.0.0.1');
-      const secure = (typeof window !== 'undefined' && !!window.isSecureContext) || (typeof location !== 'undefined' && location.protocol === 'https:') || isLocalhost;
+      const isLocalhost =
+        typeof location !== "undefined" &&
+        (location.hostname === "localhost" ||
+          location.hostname === "127.0.0.1");
+      const secure =
+        (typeof window !== "undefined" && !!window.isSecureContext) ||
+        (typeof location !== "undefined" && location.protocol === "https:") ||
+        isLocalhost;
       if (!secure) {
-        return mountUrlBase.includes('?') ? mountUrlBase + '&static=1' : mountUrlBase + '?static=1';
+        return mountUrlBase.includes("?")
+          ? mountUrlBase + "&static=1"
+          : mountUrlBase + "?static=1";
       }
     } catch {
       // ignore
@@ -81,23 +89,23 @@ function App() {
 
         {/* 纯游戏界面 - 占满全屏 */}
         <div className="game-container">
-        {!iframeReady && (
-          <div className="game-loading">
-            <div className="loading-spinner"></div>
-            <div className="loading-text">
-              <h2>🎮 无名杀</h2>
-              <p>正在加载游戏资源，支持离线缓存...</p>
-              <small>首次加载可能较慢，之后可离线游戏</small>
+          {!iframeReady && (
+            <div className="game-loading">
+              <div className="loading-spinner"></div>
+              <div className="loading-text">
+                <h2>🎮 无名杀</h2>
+                <p>正在加载游戏资源，支持离线缓存...</p>
+                <small>首次加载可能较慢，之后可离线游戏</small>
+              </div>
             </div>
-          </div>
-        )}
-        <iframe
-          onLoad={() => setIframeReady(true)}
-          src={iframeSrc}
-          title="无名杀"
-          className={`game-iframe${iframeReady ? " is-ready" : ""}`}
-          allowFullScreen
-        />
+          )}
+          <iframe
+            onLoad={() => setIframeReady(true)}
+            src={iframeSrc}
+            title="无名杀"
+            className={`game-iframe${iframeReady ? " is-ready" : ""}`}
+            allowFullScreen
+          />
         </div>
       </div>
     </>

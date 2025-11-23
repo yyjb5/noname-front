@@ -1,3 +1,4 @@
 [submodule "noname"]
 	path = noname
-	url = https://github.com/libnoname/noname.git
+	# url = https://github.com/libnoname/noname.git
+	url = https://github.com/yyjb5/noname.git

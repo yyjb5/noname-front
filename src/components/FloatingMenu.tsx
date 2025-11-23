@@ -24,8 +24,12 @@ export function FloatingMenu({ onLogout }: FloatingMenuProps) {
 
   // 确保悬浮球不会超出屏幕边界 — 使用 useLayoutEffect 以避免 setState in effect lint 建议
   useLayoutEffect(() => {
-    const effectiveWidth = forceLandscapeFallback ? window.innerHeight : window.innerWidth;
-    const effectiveHeight = forceLandscapeFallback ? window.innerWidth : window.innerHeight;
+    const effectiveWidth = forceLandscapeFallback
+      ? window.innerHeight
+      : window.innerWidth;
+    const effectiveHeight = forceLandscapeFallback
+      ? window.innerWidth
+      : window.innerHeight;
 
     const maxX = effectiveWidth - (isExpanded ? 200 : 60);
     const maxY = effectiveHeight - (isExpanded ? 120 : 60);
@@ -43,8 +47,12 @@ export function FloatingMenu({ onLogout }: FloatingMenuProps) {
     }
 
     const handleResize = () => {
-      const ew = forceLandscapeFallback ? window.innerHeight : window.innerWidth;
-      const eh = forceLandscapeFallback ? window.innerWidth : window.innerHeight;
+      const ew = forceLandscapeFallback
+        ? window.innerHeight
+        : window.innerWidth;
+      const eh = forceLandscapeFallback
+        ? window.innerWidth
+        : window.innerHeight;
       const maxX2 = ew - (isExpanded ? 200 : 60);
       const maxY2 = eh - (isExpanded ? 120 : 60);
       setPosition((curr) => {
@@ -72,7 +80,7 @@ export function FloatingMenu({ onLogout }: FloatingMenuProps) {
       // ignore if not supported
     }
 
-  startPos.current = { x: e.clientX, y: e.clientY };
+    startPos.current = { x: e.clientX, y: e.clientY };
     startPosEl.current = position;
     isDraggingRef.current = true;
     setIsDragging(true);
@@ -147,7 +155,9 @@ export function FloatingMenu({ onLogout }: FloatingMenuProps) {
   };
 
   // Position menu next to floating ball using fixed coordinates so transforms don't affect it
-  const [menuStyle, setMenuStyle] = useState<Record<string, string | number>>({});
+  const [menuStyle, setMenuStyle] = useState<Record<string, string | number>>(
+    {}
+  );
 
   const updateMenuPosition = () => {
     const btn = ballRef.current || dragRef.current;
@@ -174,28 +184,28 @@ export function FloatingMenu({ onLogout }: FloatingMenuProps) {
     try {
       if (!document.fullscreenElement) {
         // Request fullscreen on the entire page (documentElement) so the whole page enters fullscreen
-        if (typeof document.documentElement.requestFullscreen === 'function') {
+        if (typeof document.documentElement.requestFullscreen === "function") {
           await document.documentElement.requestFullscreen();
           setIsFullscreen(true);
         }
       } else {
-        if (typeof document.exitFullscreen === 'function') {
+        if (typeof document.exitFullscreen === "function") {
           await document.exitFullscreen();
           setIsFullscreen(false);
         }
       }
     } catch (err) {
-      console.warn('Fullscreen toggle failed:', err);
+      console.warn("Fullscreen toggle failed:", err);
     }
-  // Reset any orientation fallback flag we might have set previously
-  setForceLandscapeFallback(false);
+    // Reset any orientation fallback flag we might have set previously
+    setForceLandscapeFallback(false);
   };
 
   // keep fullscreen state in sync
   useLayoutEffect(() => {
     const onFs = () => setIsFullscreen(Boolean(document.fullscreenElement));
-    document.addEventListener('fullscreenchange', onFs);
-    return () => document.removeEventListener('fullscreenchange', onFs);
+    document.addEventListener("fullscreenchange", onFs);
+    return () => document.removeEventListener("fullscreenchange", onFs);
   }, []);
 
   // When entering/exiting fullscreen, the viewport size changes — clamp the floating
@@ -216,8 +226,9 @@ export function FloatingMenu({ onLogout }: FloatingMenuProps) {
       requestAnimationFrame(() => updateMenuPosition());
     };
 
-    document.addEventListener('fullscreenchange', handleFsChange);
-    return () => document.removeEventListener('fullscreenchange', handleFsChange);
+    document.addEventListener("fullscreenchange", handleFsChange);
+    return () =>
+      document.removeEventListener("fullscreenchange", handleFsChange);
   }, [isExpanded]);
 
   const handleHideCachePanel = () => {
@@ -247,23 +258,33 @@ export function FloatingMenu({ onLogout }: FloatingMenuProps) {
     // schedule after paint so menuRef has correct size
     const raf = requestAnimationFrame(() => updateMenuPosition());
     const onResize = () => updateMenuPosition();
-    window.addEventListener('resize', onResize);
-    window.addEventListener('orientationchange', onResize);
+    window.addEventListener("resize", onResize);
+    window.addEventListener("orientationchange", onResize);
     return () => {
       cancelAnimationFrame(raf);
-      window.removeEventListener('resize', onResize);
-      window.removeEventListener('orientationchange', onResize);
+      window.removeEventListener("resize", onResize);
+      window.removeEventListener("orientationchange", onResize);
     };
-  }, [isExpanded, position.x, position.y, showCachePanel, forceLandscapeFallback]);
+  }, [
+    isExpanded,
+    position.x,
+    position.y,
+    showCachePanel,
+    forceLandscapeFallback,
+  ]);
 
-  const effectiveWidth = forceLandscapeFallback ? window.innerHeight : window.innerWidth;
+  const effectiveWidth = forceLandscapeFallback
+    ? window.innerHeight
+    : window.innerWidth;
   const isFlipped = position.x > effectiveWidth - 160;
 
   return (
     <>
       <div
         ref={dragRef}
-        className={`floating-menu ${isExpanded ? "expanded" : ""} ${isFlipped ? "flip" : ""}`}
+        className={`floating-menu ${isExpanded ? "expanded" : ""} ${
+          isFlipped ? "flip" : ""
+        }`}
         style={{
           left: `${position.x}px`,
           top: `${position.y}px`,
@@ -276,13 +297,21 @@ export function FloatingMenu({ onLogout }: FloatingMenuProps) {
         title="设置 - 点击展开菜单，可拖拽移动"
       >
         {/* 悬浮球主按钮 */}
-        <div className="floating-ball" onPointerDown={handlePointerDown} ref={ballRef}>
+        <div
+          className="floating-ball"
+          onPointerDown={handlePointerDown}
+          ref={ballRef}
+        >
           <div className="ball-icon">{isExpanded ? "✕" : "⚙️"}</div>
         </div>
 
         {/* 展开的菜单项 */}
         {isExpanded && (
-          <div className="menu-items" ref={menuRef} style={menuStyle as CSSProperties}>
+          <div
+            className="menu-items"
+            ref={menuRef}
+            style={menuStyle as CSSProperties}
+          >
             <div
               className="menu-item cache"
               onClick={(e) => {
@@ -302,7 +331,7 @@ export function FloatingMenu({ onLogout }: FloatingMenuProps) {
             >
               <span className="menu-icon">🔃</span>
               <span className="menu-text">
-                {isFullscreen ? '退出全屏' : '进入全屏'}
+                {isFullscreen ? "退出全屏" : "进入全屏"}
               </span>
             </div>
             <div
@@ -318,7 +347,11 @@ export function FloatingMenu({ onLogout }: FloatingMenuProps) {
 
             {/* 二级（侧边）面板：作为菜单项的子面板显示在右侧 */}
             {showCachePanel && (
-              <div className="cache-panel-content" ref={panelRef} onClick={(e) => e.stopPropagation()}>
+              <div
+                className="cache-panel-content"
+                ref={panelRef}
+                onClick={(e) => e.stopPropagation()}
+              >
                 <div className="cache-header">
                   <h4>📦 缓存管理</h4>
                   <button onClick={handleHideCachePanel}>×</button>
