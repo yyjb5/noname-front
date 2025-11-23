@@ -16,29 +16,12 @@ function App() {
     const isStandalone = window.matchMedia(
       "(display-mode: standalone)"
     ).matches;
-    if (!isStandalone && "serviceWorker" in navigator) {
+    if (!isStandalone) {
       // 延迟显示安装提示
       const timer = setTimeout(() => {
         setShowInstallPrompt(true);
       }, 3000);
       return () => clearTimeout(timer);
-    }
-  }, []);
-
-  // 注册Service Worker
-  useEffect(() => {
-    if ("serviceWorker" in navigator) {
-      navigator.serviceWorker
-        .register("/sw.js")
-        .then((registration) => {
-          console.log("SW registered: ", registration);
-          if (registration.active) {
-            console.log("Service Worker is active");
-          }
-        })
-        .catch((registrationError) => {
-          console.log("SW registration failed: ", registrationError);
-        });
     }
   }, []);
 

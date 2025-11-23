@@ -26,7 +26,7 @@ function GamePage() {
     const isStandalone = window.matchMedia(
       "(display-mode: standalone)"
     ).matches;
-    if (!isStandalone && "serviceWorker" in navigator) {
+    if (!isStandalone) {
       const timer = setTimeout(() => {
         setShowInstallPrompt(true);
       }, 3000);
@@ -35,18 +35,7 @@ function GamePage() {
   }, []);
 
   // 注册Service Worker
-  useEffect(() => {
-    if ("serviceWorker" in navigator) {
-      navigator.serviceWorker
-        .register("/sw.js")
-        .then((registration) => {
-          console.log("SW registered: ", registration);
-        })
-        .catch((registrationError) => {
-          console.log("SW registration failed: ", registrationError);
-        });
-    }
-  }, []);
+  // Service worker registration disabled for static Vite deployment.
 
   const handleLogout = () => {
     logout();
