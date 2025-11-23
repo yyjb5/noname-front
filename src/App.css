@@ -49,6 +49,35 @@
   opacity: 1;
 }
 
+/* When we apply the fallback .force-landscape rotation to the outer document,
+   counter-rotate and center the iframe element itself so the game's content
+   appears upright and fills the rotated viewport without injecting into the iframe. */
+.force-landscape .game-container {
+  width: 100vh; /* swapped */
+  height: 100vw; /* swapped */
+  position: fixed;
+  top: 0;
+  left: 0;
+  overflow: hidden;
+}
+
+.force-landscape .game-iframe.rotated {
+  position: absolute !important;
+  top: 50% !important;
+  left: 50% !important;
+  /* Size by height to preserve internal aspect ratio, while ensuring width
+     at least covers swapped viewport to avoid vertical black bars on sides. */
+  height: 100vw !important; /* swapped viewport height */
+  width: auto !important; /* let aspect ratio decide width */
+  min-width: 100vh !important; /* ensure covers swapped viewport width */
+  min-height: 100vw !important;
+  max-width: none !important;
+  transform: translate(-50%, -50%) rotate(-90deg) !important; /* counter-rotate */
+  transform-origin: center center !important;
+  border: none !important;
+  background: #000 !important;
+}
+
 /* 兼容性：保留原有样式用于其他可能的使用场景 */
 .app-shell {
   min-height: 100vh;
@@ -344,6 +373,10 @@
   border: 1px solid rgba(255, 255, 255, 0.1);
   transition: all 0.2s ease;
   user-select: none;
+  /* Allow pointer events for touch dragging and prevent browser panning gestures */
+  touch-action: none;
+  -ms-touch-action: none;
+  -webkit-user-drag: none;
 }
 
 .floating-ball:hover {
@@ -359,9 +392,8 @@
 }
 
 .menu-items {
-  position: absolute;
-  top: 60px;
-  left: 0;
+  /* position the menu in viewport coordinates; JS sets left/top inline to anchor beside the button */
+  position: fixed;
   background: rgba(30, 41, 59, 0.95);
   backdrop-filter: blur(20px);
   border-radius: 12px;
@@ -369,15 +401,15 @@
   overflow: visible; /* allow side submenu to be visible outside the menu box */
   animation: slideIn 0.3s ease;
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
-}
-
-.menu-items {
-  /* ensure relative positioning to place submenu beside it */
-  position: absolute;
-}
-
-.menu-items {
   z-index: 1000001; /* ensure it stacks above most elements */
+  min-width: 160px;
+}
+
+/* when the floating-menu has the flip class, mirror the menu to the left */
+.floating-menu.flip .menu-items {
+  left: auto;
+  right: calc(100% + 8px);
+  transform: translateY(-50%);
 }
 
 @keyframes slideIn {
@@ -678,6 +710,12 @@
   pointer-events: auto;
 }
 
+/* When the floating menu is close to the right edge, show the submenu on the left side */
+.floating-menu.flip .cache-panel-content {
+  left: auto;
+  right: calc(100% + 12px);
+}
+
 .floating-menu .cache-panel-inner {
   max-width: 100%;
   padding: 0.5rem 0;
@@ -782,6 +820,39 @@
     right: 20px;
     left: 20px;
   }
+}
+
+/* Fallback force-landscape class: applied to <html> or <body> when Screen Orientation API is not available
+   This rotates the game container as a best-effort fallback. Prefer orientation lock via API. */
+.force-landscape .game-container {
+  /* Make rotated game fill the viewport and sit under UI controls */
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vh; /* swapped */
+  height: 100vw; /* swapped */
+  transform-origin: top left;
+  transform: rotate(90deg) translateY(-100%);
+  overflow: hidden;
+  z-index: 1; /* keep game under floating UI */
+}
+
+.force-landscape .game-iframe {
+  width: 100vh;
+  height: 100vw;
+}
+
+/* Ensure UI (floating menu) floats above rotated game */
+.force-landscape .floating-menu {
+  z-index: 1000002;
+}
+
+/* Prevent body scroll and make viewport stable when using fallback rotation */
+.force-landscape html,
+.force-landscape body {
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
 }
 
 /* 全屏游戏样式 */

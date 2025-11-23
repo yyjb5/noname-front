@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect } from "react";
 
 interface CacheStatusProps {
   embedded?: boolean;
@@ -12,15 +12,17 @@ export function CacheStatus({ embedded = false, onClose }: CacheStatusProps) {
   useEffect(() => {
     // 检查缓存状态
     const checkCacheStatus = async () => {
-      if ('caches' in window) {
+      if ("caches" in window) {
         try {
           const cacheNames = await caches.keys();
-          const nonameCache = cacheNames.find(name => name.includes('noname'));
+          const nonameCache = cacheNames.find((name) =>
+            name.includes("noname")
+          );
 
           if (nonameCache) {
             const cache = await caches.open(nonameCache);
             const keys = await cache.keys();
-            const requests = keys.map(key => key.url);
+            const requests = keys.map((key) => key.url);
 
             // 计算缓存大小（粗略估算）
             let totalSize = 0;
@@ -37,11 +39,11 @@ export function CacheStatus({ embedded = false, onClose }: CacheStatusProps) {
               count: keys.length,
               size: totalSize,
               sizeFormatted: formatFileSize(totalSize),
-              requests: requests.slice(0, 10) // 只显示前10个
+              requests: requests.slice(0, 10), // 只显示前10个
             });
           }
         } catch (error) {
-          console.error('Cache check failed:', error);
+          console.error("Cache check failed:", error);
         }
       }
     };
@@ -52,21 +54,21 @@ export function CacheStatus({ embedded = false, onClose }: CacheStatusProps) {
   }, []);
 
   const formatFileSize = (bytes: number): string => {
-    if (bytes === 0) return '0 Bytes';
+    if (bytes === 0) return "0 Bytes";
     const k = 1024;
-    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+    const sizes = ["Bytes", "KB", "MB", "GB"];
     const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i];
   };
 
   const clearCache = async () => {
-    if ('caches' in window && cacheInfo) {
+    if ("caches" in window && cacheInfo) {
       try {
         await caches.delete(cacheInfo.name);
         setCacheInfo(null);
-        alert('缓存已清除！刷新页面后将重新下载游戏资源。');
+        alert("缓存已清除！刷新页面后将重新下载游戏资源。");
       } catch (error) {
-        console.error('Failed to clear cache:', error);
+        console.error("Failed to clear cache:", error);
       }
     }
   };
@@ -76,17 +78,19 @@ export function CacheStatus({ embedded = false, onClose }: CacheStatusProps) {
       <div className="cache-panel-inner">
         <div className="cache-header">
           <h4>📦 缓存状态</h4>
-          <button onClick={() => onClose ? onClose() : setIsVisible(false)}>×</button>
+          <button onClick={() => (onClose ? onClose() : setIsVisible(false))}>
+            ×
+          </button>
         </div>
 
         <div className="cache-info">
           <div className="cache-stat">
             <span>缓存文件数量:</span>
-            <span>{cacheInfo?.count ?? '-'}</span>
+            <span>{cacheInfo?.count ?? "-"}</span>
           </div>
           <div className="cache-stat">
             <span>缓存大小:</span>
-            <span>{cacheInfo?.sizeFormatted ?? '-'}</span>
+            <span>{cacheInfo?.sizeFormatted ?? "-"}</span>
           </div>
           <div className="cache-stat">
             <span>离线可用:</span>
@@ -98,7 +102,10 @@ export function CacheStatus({ embedded = false, onClose }: CacheStatusProps) {
           <button onClick={clearCache} className="cache-btn clear">
             清除缓存
           </button>
-          <button onClick={() => onClose ? onClose() : setIsVisible(false)} className="cache-btn close">
+          <button
+            onClick={() => (onClose ? onClose() : setIsVisible(false))}
+            className="cache-btn close"
+          >
             关闭
           </button>
         </div>
@@ -106,11 +113,13 @@ export function CacheStatus({ embedded = false, onClose }: CacheStatusProps) {
         <div className="cache-details">
           <h5>最近缓存文件:</h5>
           <ul>
-            {(cacheInfo?.requests ?? []).slice(0, 5).map((url: string, index: number) => (
-              <li key={index} title={url}>
-                {url.split('/').pop()}
-              </li>
-            ))}
+            {(cacheInfo?.requests ?? [])
+              .slice(0, 5)
+              .map((url: string, index: number) => (
+                <li key={index} title={url}>
+                  {url.split("/").pop()}
+                </li>
+              ))}
           </ul>
         </div>
       </div>
@@ -165,7 +174,7 @@ export function CacheStatus({ embedded = false, onClose }: CacheStatusProps) {
         <ul>
           {cacheInfo.requests.slice(0, 5).map((url: string, index: number) => (
             <li key={index} title={url}>
-              {url.split('/').pop()}
+              {url.split("/").pop()}
             </li>
           ))}
         </ul>

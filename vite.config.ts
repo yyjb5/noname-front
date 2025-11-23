@@ -86,6 +86,22 @@ function nonameStaticBridge() {
   return {
     name: 'noname-static-bridge',
     configureServer(server: import('vite').ViteDevServer) {
+      // Simple logger middleware to show incoming /api requests in the dev server output.
+      // This helps debug whether requests reach the dev server (so proxy can forward them).
+      server.middlewares.use((req: IncomingMessage, _res: ServerResponse, next: (err?: unknown) => void) => {
+        try {
+          const url = req.url || '';
+          if (url.startsWith('/api')) {
+            // Print remote address if available for easier debugging when accessing via LAN
+            const remote = (req.socket as unknown as { remoteAddress?: string })?.remoteAddress || 'unknown';
+            console.log(`[vite dev] API request: ${url} from ${remote}`);
+          }
+        } catch {
+          // ignore logging errors
+        }
+        next();
+      });
+
       const serve = sirv(nonameDir, { dev: true });
 
       server.middlewares.use((req: IncomingMessage, res: ServerResponse, next: (err?: unknown) => void) => {
@@ -156,4 +172,21 @@ export default defineConfig({
     alias: aliasEntries,
   },
   plugins: [react(), nonameStaticBridge()],
+  // Dev server proxying to backend for API requests
+  server: {
+    // allow LAN access when developing on a device
+    host: true,
+    // default dev port (vite will pick a free port if taken)
+    port: 5173,
+    proxy: {
+      // Proxy all /api requests to the backend running on localhost:8000
+      // This keeps the frontend using relative paths like /api/.. unchanged.
+      '/api': {
+        target: 'http://localhost:8000',
+        changeOrigin: true,
+        secure: false,
+        ws: true,
+      },
+    },
+  },
 });

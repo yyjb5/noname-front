@@ -13,8 +13,10 @@ function App() {
   // PWA安装提示
   useEffect(() => {
     // 检查是否已安装为PWA
-    const isStandalone = window.matchMedia('(display-mode: standalone)').matches;
-    if (!isStandalone && 'serviceWorker' in navigator) {
+    const isStandalone = window.matchMedia(
+      "(display-mode: standalone)"
+    ).matches;
+    if (!isStandalone && "serviceWorker" in navigator) {
       // 延迟显示安装提示
       const timer = setTimeout(() => {
         setShowInstallPrompt(true);
@@ -25,23 +27,24 @@ function App() {
 
   // 注册Service Worker
   useEffect(() => {
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('/sw.js')
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker
+        .register("/sw.js")
         .then((registration) => {
-          console.log('SW registered: ', registration);
+          console.log("SW registered: ", registration);
           if (registration.active) {
-            console.log('Service Worker is active');
+            console.log("Service Worker is active");
           }
         })
         .catch((registrationError) => {
-          console.log('SW registration failed: ', registrationError);
+          console.log("SW registration failed: ", registrationError);
         });
     }
   }, []);
 
   const handleLogout = () => {
-    if (confirm('确定要退出登录吗？')) {
-      console.log('用户退出登录');
+    if (confirm("确定要退出登录吗？")) {
+      console.log("用户退出登录");
       window.location.reload();
     }
   };
@@ -51,8 +54,8 @@ function App() {
       {/* 悬浮菜单 - 唯一的控制界面 */}
       <FloatingMenu onLogout={handleLogout} />
 
-  {/* 缓存状态指示器 (已移动到 FloatingMenu 内部) */}
-  {/* CacheStatus removed here to avoid duplicate UI; use FloatingMenu -> Cache panel instead */}
+      {/* 缓存状态指示器 (已移动到 FloatingMenu 内部) */}
+      {/* CacheStatus removed here to avoid duplicate UI; use FloatingMenu -> Cache panel instead */}
 
       {/* PWA安装提示 */}
       {showInstallPrompt && (

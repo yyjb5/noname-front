@@ -23,8 +23,10 @@ function GamePage() {
 
   // PWA安装提示
   useEffect(() => {
-    const isStandalone = window.matchMedia('(display-mode: standalone)').matches;
-    if (!isStandalone && 'serviceWorker' in navigator) {
+    const isStandalone = window.matchMedia(
+      "(display-mode: standalone)"
+    ).matches;
+    if (!isStandalone && "serviceWorker" in navigator) {
       const timer = setTimeout(() => {
         setShowInstallPrompt(true);
       }, 3000);
@@ -34,13 +36,14 @@ function GamePage() {
 
   // 注册Service Worker
   useEffect(() => {
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('/sw.js')
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker
+        .register("/sw.js")
         .then((registration) => {
-          console.log('SW registered: ', registration);
+          console.log("SW registered: ", registration);
         })
         .catch((registrationError) => {
-          console.log('SW registration failed: ', registrationError);
+          console.log("SW registration failed: ", registrationError);
         });
     }
   }, []);
@@ -56,7 +59,7 @@ function GamePage() {
       <FloatingMenu onLogout={handleLogout} />
 
       {/* 缓存状态指示器 */}
-  {/* CacheStatus removed here to avoid duplicate UI; use FloatingMenu -> Cache panel instead */}
+      {/* CacheStatus removed here to avoid duplicate UI; use FloatingMenu -> Cache panel instead */}
 
       {/* PWA安装提示 */}
       {showInstallPrompt && (
