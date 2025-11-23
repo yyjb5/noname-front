@@ -173,10 +173,9 @@ export function FloatingMenu({ onLogout }: FloatingMenuProps) {
   const toggleLandscape = async () => {
     try {
       if (!document.fullscreenElement) {
-        // prefer the explicit game container if present, otherwise fallback to documentElement
-        const container = document.querySelector('.game-container') as HTMLElement | null || document.documentElement as HTMLElement;
-        if (container && typeof container.requestFullscreen === 'function') {
-          await container.requestFullscreen();
+        // Request fullscreen on the entire page (documentElement) so the whole page enters fullscreen
+        if (typeof document.documentElement.requestFullscreen === 'function') {
+          await document.documentElement.requestFullscreen();
           setIsFullscreen(true);
         }
       } else {
@@ -198,6 +197,28 @@ export function FloatingMenu({ onLogout }: FloatingMenuProps) {
     document.addEventListener('fullscreenchange', onFs);
     return () => document.removeEventListener('fullscreenchange', onFs);
   }, []);
+
+  // When entering/exiting fullscreen, the viewport size changes — clamp the floating
+  // ball position into the new viewport and update menu positioning so it stays visible.
+  useLayoutEffect(() => {
+    const handleFsChange = () => {
+      // clamp position to current viewport
+      const maxX = window.innerWidth - (isExpanded ? 200 : 60);
+      const maxY = window.innerHeight - (isExpanded ? 120 : 60);
+      setPosition((curr) => {
+        const nx = Math.max(8, Math.min(curr.x, Math.max(8, maxX)));
+        const ny = Math.max(8, Math.min(curr.y, Math.max(8, maxY)));
+        if (nx === curr.x && ny === curr.y) return curr;
+        return { x: nx, y: ny };
+      });
+
+      // update menu position after layout
+      requestAnimationFrame(() => updateMenuPosition());
+    };
+
+    document.addEventListener('fullscreenchange', handleFsChange);
+    return () => document.removeEventListener('fullscreenchange', handleFsChange);
+  }, [isExpanded]);
 
   const handleHideCachePanel = () => {
     setShowCachePanel(false);

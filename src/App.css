@@ -868,6 +868,40 @@
   flex-direction: column;
 }
 
+/* Ensure the floating menu is visible when the wrapper is fullscreen (handles vendor prefixes) */
+.app-fullscreen-wrapper:fullscreen,
+.app-fullscreen-wrapper:-webkit-full-screen {
+  width: 100vw;
+  height: 100vh;
+}
+
+.app-fullscreen-wrapper:fullscreen .floating-menu,
+.app-fullscreen-wrapper:-webkit-full-screen .floating-menu {
+  position: fixed !important;
+  z-index: 2147483647 !important; /* top-most */
+  pointer-events: auto !important;
+}
+
+/* keep game-container under the UI when wrapper is fullscreen */
+.app-fullscreen-wrapper:fullscreen .game-container,
+.app-fullscreen-wrapper:-webkit-full-screen .game-container {
+  z-index: 1;
+}
+
+/* Ensure floating menu is visible when ANY element (including the root html) is fullscreen */
+:fullscreen .floating-menu,
+:-webkit-full-screen .floating-menu {
+  position: fixed !important;
+  z-index: 2147483647 !important;
+  pointer-events: auto !important;
+}
+
+/* Keep game container under UI when the root is fullscreen */
+:fullscreen .game-container,
+:-webkit-full-screen .game-container {
+  z-index: 1;
+}
+
 .fullscreen-header {
   position: absolute;
   top: 0;
