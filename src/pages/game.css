@@ -1,3 +1,75 @@
+/* 游戏容器 - 完全占满屏幕 */
+.game-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: #000;
+  z-index: 1;
+}
+
+/* 游戏加载界面 */
+.game-loading {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  z-index: 100;
+  color: white;
+}
+
+.loading-text h2 {
+  margin: 0 0 1rem 0;
+  font-size: 2rem;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.loading-text p {
+  margin: 0 0 0.5rem 0;
+  opacity: 0.7;
+  font-size: 1rem;
+}
+
+.loading-text small {
+  opacity: 0.5;
+  font-size: 0.9rem;
+}
+
+.loading-spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid rgba(255, 255, 255, 0.3);
+  border-top: 3px solid white;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin: 0 auto 1rem;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* 游戏iframe */
+.game-iframe {
+  width: 100%;
+  height: 100%;
+  border: none;
+  background: #000;
+  opacity: 0;
+  transition: opacity 0.5s ease-in-out;
+}
+
+.game-iframe.is-ready {
+  opacity: 1;
+}
+
+/* 兼容旧样式 */
 .game-shell {
   position: relative;
   flex: 1 1 auto;

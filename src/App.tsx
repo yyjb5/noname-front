@@ -1,65 +1,85 @@
-import { useMemo, useState } from "react";
+import { useState, useEffect } from "react";
+import { PWAInstallPrompt } from "./components/PWAInstallPrompt";
+import { FloatingMenu } from "./components/FloatingMenu";
+// CacheStatus intentionally not imported here; caching UI moved into FloatingMenu
 import "./App.css";
 
 const mountUrl = `${import.meta.env.BASE_URL}noname/index.html`;
 
 function App() {
-  const [embedded, setEmbedded] = useState(true);
   const [iframeReady, setIframeReady] = useState(false);
+  const [showInstallPrompt, setShowInstallPrompt] = useState(false);
 
-  const iframeSrc = useMemo(() => mountUrl, []);
+  // PWA安装提示
+  useEffect(() => {
+    // 检查是否已安装为PWA
+    const isStandalone = window.matchMedia('(display-mode: standalone)').matches;
+    if (!isStandalone && 'serviceWorker' in navigator) {
+      // 延迟显示安装提示
+      const timer = setTimeout(() => {
+        setShowInstallPrompt(true);
+      }, 3000);
+      return () => clearTimeout(timer);
+    }
+  }, []);
 
-  const toggleEmbedded = () => {
-    setEmbedded((prev) => {
-      const next = !prev;
-      if (next) {
-        setIframeReady(false);
-      }
-      return next;
-    });
+  // 注册Service Worker
+  useEffect(() => {
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/sw.js')
+        .then((registration) => {
+          console.log('SW registered: ', registration);
+          if (registration.active) {
+            console.log('Service Worker is active');
+          }
+        })
+        .catch((registrationError) => {
+          console.log('SW registration failed: ', registrationError);
+        });
+    }
+  }, []);
+
+  const handleLogout = () => {
+    if (confirm('确定要退出登录吗？')) {
+      console.log('用户退出登录');
+      window.location.reload();
+    }
   };
 
   return (
-    <div className="app-shell">
-      <header className="shell-header">
-        <div>
-          <h1>React Shell for 无名杀</h1>
-          <p>
-            本项目使用 Vite 打包并托管 <code>noname</code> 子模块的静态资源。
-            默认以内嵌窗口预览，可点击按钮在新标签页打开原生页面。
-          </p>
-        </div>
-        <div className="header-actions">
-          <button type="button" onClick={toggleEmbedded}>
-            {embedded ? "隐藏内嵌窗口" : "显示内嵌窗口"}
-          </button>
-          <button
-            type="button"
-            onClick={() => window.open(iframeSrc, "_blank", "noopener")}
-          >
-            在新标签中打开无名杀
-          </button>
-        </div>
-      </header>
-      {embedded ? (
-        <section className="preview-panel">
-          {!iframeReady && (
-            <div className="loading-hint">正在加载无名杀资源…</div>
-          )}
-          <iframe
-            onLoad={() => setIframeReady(true)}
-            src={iframeSrc}
-            title="noname"
-            className={`game-frame${iframeReady ? " is-ready" : ""}`}
-            allowFullScreen
-          />
-        </section>
-      ) : (
-        <section className="preview-placeholder">
-          <p>内嵌窗口已关闭。使用上方按钮重新显示或在新标签页打开。</p>
-        </section>
+    <>
+      {/* 悬浮菜单 - 唯一的控制界面 */}
+      <FloatingMenu onLogout={handleLogout} />
+
+  {/* 缓存状态指示器 (已移动到 FloatingMenu 内部) */}
+  {/* CacheStatus removed here to avoid duplicate UI; use FloatingMenu -> Cache panel instead */}
+
+      {/* PWA安装提示 */}
+      {showInstallPrompt && (
+        <PWAInstallPrompt onClose={() => setShowInstallPrompt(false)} />
       )}
-    </div>
+
+      {/* 纯游戏界面 - 占满全屏 */}
+      <div className="game-container">
+        {!iframeReady && (
+          <div className="game-loading">
+            <div className="loading-spinner"></div>
+            <div className="loading-text">
+              <h2>🎮 无名杀</h2>
+              <p>正在加载游戏资源，支持离线缓存...</p>
+              <small>首次加载可能较慢，之后可离线游戏</small>
+            </div>
+          </div>
+        )}
+        <iframe
+          onLoad={() => setIframeReady(true)}
+          src={mountUrl}
+          title="无名杀"
+          className={`game-iframe${iframeReady ? " is-ready" : ""}`}
+          allowFullScreen
+        />
+      </div>
+    </>
   );
 }
 

@@ -4,7 +4,6 @@ import {
   createRootRoute,
   createRoute,
   createRouter,
-  useRouter,
 } from "@tanstack/react-router";
 import type { ReactNode } from "react";
 import LoginPage from "./pages/Login";
@@ -46,39 +45,13 @@ export function AppRouter() {
 }
 
 function RootLayout(): ReactNode {
-  const router = useRouter();
-  const { isAuthenticated, logout } = useAuth();
-
-  const handleLogout = () => {
-    logout();
-    router.navigate({ to: "/" });
-  };
+  const { isAuthenticated } = useAuth();
 
   return (
-    <div
-      className={isAuthenticated ? "shell shell--auth" : "shell shell--guest"}
-    >
-      {isAuthenticated ? (
-        <>
-          <header className="topbar">
-            <span className="topbar__title">无名杀部署控制台</span>
-            <button
-              type="button"
-              className="topbar__logout"
-              onClick={handleLogout}
-            >
-              退出登录
-            </button>
-          </header>
-          <main className="shell__body shell__body--auth">
-            <Outlet />
-          </main>
-        </>
-      ) : (
-        <main className="shell__body shell__body--guest">
-          <Outlet />
-        </main>
-      )}
+    <div className={isAuthenticated ? "shell shell--auth" : "shell shell--guest"}>
+      <main className="shell__body">
+        <Outlet />
+      </main>
     </div>
   );
 }
